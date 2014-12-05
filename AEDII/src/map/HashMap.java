@@ -2,7 +2,7 @@ package map;
 
 import java.util.*;
 import lista.*;
-
+/*Implementacion de un MAP con HashMap*/
 public class HashMap<K,V> implements MAP<K,V> {
 	private Lista<Par<K,V>>[] a;
 	private int capacidad;
