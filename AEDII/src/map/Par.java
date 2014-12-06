@@ -1,5 +1,8 @@
 package map;
 
+//Clase par
+
+
 public class Par<K, V> {
 	private K clave;
 	private V valor;
