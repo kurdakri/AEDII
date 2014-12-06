@@ -2,6 +2,8 @@ package map;
 
 import java.util.Iterator;
 
+//Interfaz del map
+
 public interface MAP<K, V> {
 
 	public int tamano();
