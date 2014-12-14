@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import grafo.*;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Actividad8 {
 	
@@ -196,5 +198,153 @@ public class Actividad8 {
 	    	}
 	    	return conexo;
 	    }
+	    
+	    //Algoritmo del viajante
+	    
+	    public static<E extends Comparable<E>> Grafo<E,Integer> viajante(Grafo<E,Integer> g,Vertice<E> v){
+	    	Vertice<E> nodoActual = v;
+	    	Vector<E> porVisitar = new Vector<E>();
+	    	Grafo<E,Integer> solucion = new ListaAdyacencia<E,Integer>();
+	    	Iterator<Vertice<E>> vertices = g.vertices();
+	    	while(vertices.hasNext()){
+	    		Vertice<E> w = vertices.next();
+	    		porVisitar.add(w.getEtiqueta());
+	    	}
+	    	
+	    	porVisitar.remove(nodoActual.getEtiqueta());
+	    	boolean continuar = true;
+	    	while(!porVisitar.isEmpty() && continuar){
+	    		Arco<E,Integer> u = minimo(g.arcos(),porVisitar,nodoActual);
+	    		if(u != null){
+	    		porVisitar.remove(u.getDestino().getEtiqueta());
+	    		solucion.insertarArco(u);
+	    		nodoActual = u.getDestino();
+	    		}else continuar = false;
+	    	}
+	    	return solucion;
+	    }
+	    
+	    private static<E extends Comparable<E>> Arco<E,Integer> minimo(Iterator<Arco<E,Integer>> arcos,Vector<E> porVisitar,
+	    		Vertice<E> nodoActual){
+	    	
+	    	int distancia_min = 0;
+	    	int min = Integer.MAX_VALUE;
+	    	Arco<E,Integer> arc_min = null;
+	    	while(arcos.hasNext()){
+	    		Arco<E,Integer> a = arcos.next();
+	    		if(a.getOrigen().equals(nodoActual) && porVisitar.contains(a.getDestino().getEtiqueta())){
+	    			distancia_min = a.getEtiqueta();
+	    			if(distancia_min < min){
+	    				arc_min = a;
+	    				min = distancia_min;
+	    			}
+	    		}
+	    	}
+	    	return arc_min;
+	    	
+	    }
+	    
+	    //Algoritmo de Prim
+	    
+	    public static<E extends Comparable<E>> Grafo<E,Integer> prim(Grafo<E,Integer> g,Vertice<E> v){
+	    	Vector<E> porVisitar = new Vector<E>();
+	    	Vector<E> visitados = new Vector<E>();
+	    	Grafo<E,Integer> solucion = new ListaAdyacencia<E,Integer>();
+	    	Iterator<Vertice<E>> vertices = g.vertices();
+	    	while(vertices.hasNext()){
+	    		Vertice<E> w = vertices.next();
+	    		porVisitar.add(w.getEtiqueta());
+	    	}
+	    	porVisitar.remove(v.getEtiqueta());
+	    	visitados.add(v.getEtiqueta());
+	    	while(!porVisitar.isEmpty()){
+	    		Arco<E,Integer> u = minimo(g.arcos(),porVisitar,visitados);
+	    		porVisitar.remove(u.getDestino().getEtiqueta());
+	    		visitados.add(u.getDestino().getEtiqueta());
+	    		solucion.insertarArco(u);
+	    	}
+	    	return solucion;
+	    	
+	    }
+	    
+	    private static<E extends Comparable<E>> Arco<E,Integer> minimo(Iterator<Arco<E,Integer>> arcos,Vector<E> porVisitar,
+	    		Vector<E> visitados){
+	    	int distancia_min =0;
+	    	int min = Integer.MAX_VALUE;
+	    	Arco<E,Integer> arc_min = null;
+	    	while(arcos.hasNext()){
+	    		Arco<E,Integer> a = arcos.next();
+	    		if(visitados.contains(a.getOrigen().getEtiqueta()) && porVisitar.contains(a.getDestino().getEtiqueta())){
+	    			distancia_min = a.getEtiqueta();
+	    			if(distancia_min < min){
+	    				arc_min = a;
+	    				min = distancia_min;
+	    			}
+	    		}
+	    	}
+	    	return arc_min;
+	    	
+	    }
 	
+	    //Algoritmo de Dijkstra
+	    
+	    public static<E> Map<Vertice<E>,Integer> dijkstra(Grafo<E,Integer> g,Vertice<E> v){
+	    	Map<Vertice<E>,Integer> distancia = new HashMap<Vertice<E>,Integer>();
+	    	Vector<Vertice<E>> porVisitar = new Vector<Vertice<E>>();
+	    	Iterator<Vertice<E>> vertices = g.vertices();
+	    	while(vertices.hasNext()){
+	    		Vertice<E> w = vertices.next();
+	    		porVisitar.add(w);
+	    		distancia.put(w, Integer.MAX_VALUE);
+	    	}
+	    	distancia.put(v, 0);
+	    	while(!porVisitar.isEmpty()){
+	    		Vertice<E> u = minimo(distancia,porVisitar.iterator());
+	    		porVisitar.remove(u);
+	    		int distmin = distancia.get(u);
+	    		if(distmin != Integer.MAX_VALUE){
+	    			Iterator<Vertice<E>> adys = g.adyacentes(u);
+	    			while(adys.hasNext()){
+	    				Vertice<E> verAdy = adys.next();
+	    				if(porVisitar.contains(verAdy)){
+	    					Iterator<Arco<E,Integer>> arc = g.arcos();
+	    					int distminAdy = 0;
+	    					while(arc.hasNext()){
+	    						Arco<E,Integer> a1 = arc.next();
+	    						if(a1.getOrigen().equals(u) && a1.getDestino().equals(verAdy)){
+	    							distminAdy = a1.getEtiqueta();
+	    						}
+	    					}
+	    					
+	    					if(distmin+distminAdy < distancia.get(verAdy)) distancia.put(verAdy, distmin+distminAdy);
+	    				}
+	    			}
+	    		}
+	    	}
+    		return distancia;
+	    	
+	    }
+	    
+	    private static <E> Vertice<E> minimo (Map<Vertice<E>,Integer> d, Iterator<Vertice<E>> iPorVisitar)
+	    {
+	        Vertice<E> v, minV = iPorVisitar.next();
+	        int c, minD = d.get(minV);
+	        
+	        while (iPorVisitar.hasNext())
+	        {
+	            v = iPorVisitar.next();
+	            c = d.get(v);
+	            if (c < minD)
+	            {
+	                minV = v;
+	                minD = c;
+	            }
+	        }
+	        
+	        return minV;
+	        
+	        
+	    }
+	    
+	    
 }

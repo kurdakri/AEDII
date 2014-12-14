@@ -2,6 +2,7 @@ package aedii_actividad8;
 
 import grafo.*;
 import java.util.Iterator;
+import java.util.Map;
 public class launcher {
 	public static void main(String[] args){
 		Grafo<String,Integer> g = new ListaAdyacencia<String,Integer>();
@@ -65,5 +66,83 @@ public class launcher {
 	    //Prueba grafo conexo
 	    
 	    System.out.println("\n¿Es el grafo conexo?\nRespuesta: "+Actividad8.conexo(g));
+	    
+	    //ALGORITMOS VORACES
+	    
+        Grafo <Integer, Integer> g1 = new ListaAdyacencia<Integer,Integer>();
+        
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(1),new Vertice<Integer>(2),3));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(1),new Vertice<Integer>(6),5));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(2),new Vertice<Integer>(3),7));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(2),new Vertice<Integer>(6),10));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(6),new Vertice<Integer>(3),8));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(6),new Vertice<Integer>(4),2));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(3),new Vertice<Integer>(4),5));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(3),new Vertice<Integer>(5),1));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(4),new Vertice<Integer>(5),6)); 
+        // Arcos en ambos sentidos para el problema del viajante
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(2),new Vertice<Integer>(1),3));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(6),new Vertice<Integer>(1),5));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(3),new Vertice<Integer>(2),7));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(6),new Vertice<Integer>(2),10));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(3),new Vertice<Integer>(6),8));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(4),new Vertice<Integer>(6),2));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(4),new Vertice<Integer>(3),5));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(5),new Vertice<Integer>(3),1));
+        g1.insertarArco(new Arco<Integer,Integer>(new Vertice<Integer>(5),new Vertice<Integer>(4),6)); 
+        
+        Iterator<Arco<Integer,Integer>> arc = g1.arcos();
+        
+        System.out.println("\nGRAFO ALGORITMOS VORACES");
+        while(arc.hasNext()){
+        	Arco<Integer,Integer> a1 = arc.next();
+        	System.out.println("\n Vertice origen: "+a1.getOrigen().getEtiqueta()+"\nVertice destino: "
+        			+a1.getDestino().getEtiqueta()+"\nDistancia: "+a1.getEtiqueta());
+        }
+        
+        //Prueba Algoritmo del viajante
+        
+        System.out.println("\nProbando algoritmo del viajante:");
+        int distancia=0;
+        Vertice<Integer> origen = new Vertice<Integer>(1);
+        Grafo<Integer,Integer> gviajante = Actividad8.viajante(g1,origen);
+        System.out.println("\nCamino mas corto desde 1 :");
+        Iterator<Arco<Integer,Integer>> arcviajante = gviajante.arcos();
+        while(arcviajante.hasNext()){
+        	Arco<Integer,Integer> a2 = arcviajante.next();
+        	System.out.println("\nVertice origen: "+a2.getOrigen().getEtiqueta()+"\nVertice destino: "
+        			+a2.getDestino().getEtiqueta()+"\nDistancia: "+a2.getEtiqueta());
+        	distancia=distancia+a2.getEtiqueta();
+        }
+        System.out.println("\nDistanciaTotal: "+distancia);
+        
+        //Prueba Algoritmo de Prim
+        System.out.println("\nProbando algoritmo de Prim:");
+        int distanciaPrim=0;
+        Vertice<Integer> origenPrim = new Vertice<Integer>(1);
+        Grafo<Integer,Integer> gPrim = Actividad8.prim(g1,origenPrim);
+        System.out.println("\nGrafo Prim solucion con origen en 1 :");
+        Iterator<Arco<Integer,Integer>> arcPrim = gPrim.arcos();
+        while(arcPrim.hasNext()){
+        	Arco<Integer,Integer> a3 = arcPrim.next();
+        	System.out.println("\nVertice origen: "+a3.getOrigen().getEtiqueta()+"\nVertice destino: "
+        			+a3.getDestino().getEtiqueta()+"\nDistancia: "+a3.getEtiqueta());
+        	distanciaPrim=distanciaPrim+a3.getEtiqueta();
+        }
+        System.out.println("\nDistanciaTotal:"+distanciaPrim);
+        
+        //Prueba Algoritmo de Dijkstra
+        System.out.println("\nProbando algoritmo de Dijkstra");
+        Vertice<Integer> origenDijkstra = new Vertice<Integer>(1);
+        Map<Vertice<Integer>,Integer> mapa = Actividad8.dijkstra(g1, origenDijkstra);
+        Iterator<Vertice<Integer>> claves = mapa.keySet().iterator();
+        while(claves.hasNext()){
+        	Vertice<Integer> vc = claves.next();
+        	Integer c = vc.getEtiqueta();
+        	System.out.println("\nVertice: "+c.toString()+"\nvalor: "+mapa.get(vc));
+        }
+        
+        
+        
 	}
 }
